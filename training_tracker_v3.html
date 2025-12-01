@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Tracker Pro - Управление программой тренировок</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+        }
+
+        .login-box {
+            background: #1a1f3a;
+            border: 2px solid #00d084;
+            border-radius: 12px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 208, 132, 0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-box h1 {
+            font-size: 32px;
+            color: #00d084;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(0, 208, 132, 0.5);
+        }
+
+        .login-box p {
+            color: #b0b0b0;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+
+        .login-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn-login {
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-athlete {
+            background: #00d084;
+            color: #0a0e27;
+        }
+
+        .btn-athlete:hover {
+            background: #00e699;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 208, 132, 0.4);
+        }
+
+        .btn-supervisor {
+            background: #ff6b35;
+            color: #fff;
+        }
+
+        .btn-supervisor:hover {
+            background: #ff8555;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        .app-hidden { display: none !important; }
+
+        .header {
+            background: #1a1f3a;
+            border-bottom: 2px solid #00d084;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 20px; }
+
+        .role-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .role-athlete { background: #00d084; color: #0a0e27; }
+        .role-supervisor { background: #ff6b35; color: #fff; }
+
+        .header-right { display: flex; gap: 15px; align-items: center; }
+
+        .btn-sync {
+            padding: 10px 16px;
+            background: #4a5f8f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-sync:hover { background: #5a6fa0; }
+        .btn-sync.syncing { background: #00d084; animation: pulse 1s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .sync-status {
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            background: rgba(0, 208, 132, 0.2);
+            color: #00d084;
+            white-space: nowrap;
+        }
+
+        .btn-logout {
+            padding: 10px 20px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover { background: #ff8555; }
+
+        .controls {
+            background: #1a1f3a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #00d084;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .select-week, .select-day, .select-week-supervisor {
+            background: #0a0e27;
+            color: #e0e0e0;
+            padding: 10px 15px;
+            border: 1px solid #00d084;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .select-week:focus, .select-day:focus, .select-week-supervisor:focus {
+            outline: none;
+            border-color: #00e699;
+            box-shadow: 0 0 10px rgba(0, 208, 132, 0.3);
+        }
+
+        .workouts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 15px;
+        }
+
+        .workout-card {
+            background: #1a1f3a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .workout-card:hover {
+            border-color: #00d084;
+            box-shadow: 0 10px 25px rgba(0, 208, 132, 0.2);
+        }
+
+        .workout-card.completed {
+            border-color: #00d084;
+            background: rgba(0, 208, 132, 0.05);
+        }
+
+        .workout-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #00d084;
+            margin-bottom: 10px;
+        }
+
+        .workout-type {
+            font-size: 12px;
+            color: #888;
+            background: #0a0e27;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .workout-details {
+            font-size: 13px;
+            color: #b0b0b0;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .detail-label { color: #888; }
+        .detail-value { color: #e0e0e0; font-weight: 600; }
+
+        .workout-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-complete { background: #00d084; color: #0a0e27; flex: 1; min-width: 100px; }
+        .btn-complete:hover { background: #00e699; }
+
+        .btn-edit { background: #4a5f8f; color: white; flex: 1; min-width: 80px; }
+        .btn-edit:hover { background: #5a6fa0; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: #1a1f3a;
+            border: 2px solid #00d084;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            color: #00d084;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .form-group { margin-bottom: 20px; }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            color: #00d084;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            background: #0a0e27;
+            color: #e0e0e0;
+            border: 1px solid #333;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #00d084;
+            box-shadow: 0 0 10px rgba(0, 208, 132, 0.3);
+        }
+
+        .form-textarea { resize: vertical; min-height: 80px; }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 12px;
+            background: #00d084;
+            color: #0a0e27;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover { background: #00e699; }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 12px;
+            background: #333;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover { background: #444; }
+
+        .dashboard-container {
+            background: #1a1f3a;
+            border: 1px solid #00d084;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .dashboard-title {
+            font-size: 20px;
+            color: #00d084;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .dashboard-card {
+            background: #0a0e27;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .dashboard-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .dashboard-value {
+            font-size: 32px;
+            color: #00d084;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .workouts-grid { grid-template-columns: 1fr; }
+            .modal-content { padding: 20px; width: 95%; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .header-right { width: 100%; justify-content: space-between; }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <h1>🏃 TRAINING TRACKER PRO</h1>
+            <p>Управление программой тренировок<br>Синхронизация с Google Sheets<br>v3.0 Full Sync</p>
+            <div class="login-buttons">
+                <button class="btn-login btn-athlete" onclick="login('athlete')">
+                    🏃 Войти как спортсмен
+                </button>
+                <button class="btn-login btn-supervisor" onclick="login('supervisor')">
+                    👨‍🏫 Войти как супервайзер
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainApp" class="app-hidden">
+        <div class="header">
+            <div class="header-left">
+                <h1 style="font-size: 24px; color: #00d084;">🏃 TRAINING TRACKER</h1>
+                <span id="roleDisplay" class="role-badge"></span>
+            </div>
+            <div class="header-right">
+                <button class="btn-sync" id="syncBtn" onclick="syncWithSheets()">
+                    <span id="syncIcon">🔄</span>
+                    <span id="syncText">Синхро</span>
+                </button>
+                <span id="syncStatus" class="sync-status"></span>
+                <button class="btn-logout" onclick="logout()">Выход</button>
+            </div>
+        </div>
+
+        <!-- ATHLETE VIEW -->
+        <div id="athleteView" class="app-hidden">
+            <div class="controls">
+                <select id="selectWeek" class="select-week" onchange="updateAthleteWorkouts()">
+                    <option value="0">Неделя 1 (01-07.12)</option>
+                </select>
+                <select id="selectDay" class="select-day" onchange="updateAthleteWorkouts()">
+                    <option value="0">Пн</option>
+                    <option value="1">Вт</option>
+                    <option value="2">Ср</option>
+                    <option value="3">Чт</option>
+                    <option value="4">Пт</option>
+                    <option value="5">Сб</option>
+                    <option value="6">Вс</option>
+                </select>
+            </div>
+
+            <div id="workoutsContainer" class="workouts-grid"></div>
+
+            <div class="dashboard-container">
+                <div class="dashboard-title">📊 Дашборд дня</div>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="dashboard-label">Выполнено упр.</div>
+                        <div class="dashboard-value" id="completedCount">0</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="dashboard-label">% выполнения</div>
+                        <div class="dashboard-value" id="completionPercent">0%</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="dashboard-label">Средний RPE</div>
+                        <div class="dashboard-value" id="avgRPE">0.0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUPERVISOR VIEW -->
+        <div id="supervisorView" class="app-hidden">
+            <div class="controls">
+                <select id="selectWeekSupervisor" class="select-week-supervisor" onchange="updateSupervisorView()">
+                    <option value="0">Неделя 1 (01-07.12) • АДАПТАЦИЯ</option>
+                </select>
+            </div>
+
+            <div class="dashboard-container">
+                <div class="dashboard-title">📊 Аналитика недели</div>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="dashboard-label">Дней пройдено</div>
+                        <div class="dashboard-value" id="supervisorCompleted">0</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="dashboard-label">% выполнения</div>
+                        <div class="dashboard-value" id="supervisorPercent">0%</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="dashboard-label">Среднее RPE</div>
+                        <div class="dashboard-value" id="supervisorAvgRPE">0.0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOG MODAL -->
+    <div id="logModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">📝 Логирование тренировки</div>
+            <div class="form-group">
+                <label class="form-label">Упражнение</label>
+                <input type="text" id="logExerciseName" class="form-input" readonly>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Факт. пульс (уд/мин)</label>
+                <input type="number" id="logPulse" class="form-input" placeholder="Например: 135">
+            </div>
+            <div class="form-group">
+                <label class="form-label">RPE (фактический, 1-10)</label>
+                <input type="number" id="logRPE" class="form-input" min="1" max="10" placeholder="Например: 5">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Самочувствие</label>
+                <select id="logMood" class="form-select">
+                    <option value="">-- Выбери --</option>
+                    <option value="Отлично">✅ Отлично</option>
+                    <option value="Хорошо">👍 Хорошо</option>
+                    <option value="Нормально">😐 Нормально</option>
+                    <option value="Плохо">😞 Плохо</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Примечания</label>
+                <textarea id="logNotes" class="form-textarea" placeholder="Опционально"></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-primary" onclick="saveLogData()">💾 Отметить выполненным</button>
+                <button class="btn-secondary" onclick="closeModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">✏️ Редактировать упражнение</div>
+            <div class="form-group">
+                <label class="form-label">Название</label>
+                <input type="text" id="editExerciseName" class="form-input" readonly>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Подходы</label>
+                <input type="number" id="editSets" class="form-input" min="1">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Повторения</label>
+                <input type="text" id="editReps" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Вес</label>
+                <input type="text" id="editWeight" class="form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">RPE (1-10)</label>
+                <input type="number" id="editRPE" class="form-input" min="1" max="10">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-primary" onclick="saveEditedWorkout()">💾 Сохранить</button>
+                <button class="btn-secondary" onclick="closeModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // GOOGLE APPS SCRIPT URL
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbyvRfW2afHio90H5UxJSL_1UUlWxNiElnkgDmRVKkUbQmxxepvdYCICkbsYyHqmtbGQ/exec';
+
+        const TRAINING_DATA = [
+            {
+                week: 1,
+                phase: "АДАПТАЦИЯ",
+                days: [
+                    { 
+                        date: "01.12.2025", 
+                        day: "Пн", 
+                        workouts: [
+                            { exercise: "Лёгкий восстановительный кросс", type: "Бег восстановительный", duration: "45 мин", rpe: 3 }
+                        ] 
+                    },
+                    { 
+                        date: "02.12.2025", 
+                        day: "Вт", 
+                        workouts: [
+                            { exercise: "СБУ комплекс", type: "ОФП/СБУ", duration: "15-20 мин", rpe: 4 },
+                            { exercise: "Single-Leg RDL", type: "ОФП", sets: 2, reps: "8 на ногу", weight: "16 кг", rpe: 5 },
+                            { exercise: "Bulgarian Split Squat", type: "ОФП", sets: 2, reps: "8 на ногу", weight: "BW", rpe: 5 },
+                            { exercise: "Single-Leg Calf Raise", type: "ОФП", sets: 3, reps: "15 на ногу", weight: "BW", rpe: 4 },
+                            { exercise: "Pallof Press", type: "ОФП", sets: 3, reps: "10 на сторону", weight: "Резина средняя", rpe: 5 },
+                            { exercise: "Single-Leg Hop", type: "ОФП", sets: 3, reps: "6 на ногу", weight: "BW", rpe: 4 },
+                            { exercise: "Copenhagen Plank", type: "ОФП", sets: 2, reps: "30 сек на сторону", weight: "BW", rpe: 5 },
+                            { exercise: "Наклонный жим гантелей", type: "Жимовое", sets: 3, reps: "6", weight: "12.5 кг", rpe: 6 },
+                            { exercise: "Тяга в наклоне", type: "Тяговое", sets: 3, reps: "8", weight: "15 кг", rpe: 6 },
+                            { exercise: "Back Extension", type: "На низ", sets: 3, reps: "12", weight: "BW", rpe: 5 }
+                        ] 
+                    },
+                    { 
+                        date: "03.12.2025", 
+                        day: "Ср", 
+                        workouts: [
+                            { exercise: "Средний темповый", type: "Бег темповый", duration: "60 мин", rpe: 4 }
+                        ] 
+                    },
+                    { 
+                        date: "04.12.2025", 
+                        day: "Чт", 
+                        workouts: [
+                            { exercise: "Romanian Deadlift", type: "Силовая Д1", sets: 3, reps: "8", weight: "80/90/100 кг", rpe: 7 },
+                            { exercise: "Bench Press", type: "Силовая Д1", sets: 3, reps: "8", weight: "55/60/60 кг", rpe: 6 }
+                        ] 
+                    },
+                    { 
+                        date: "05.12.2025", 
+                        day: "Пт", 
+                        workouts: [
+                            { exercise: "Лёгкий восстановительный", type: "Бег восстановительный", duration: "35 мин", rpe: 3 }
+                        ] 
+                    },
+                    { 
+                        date: "06.12.2025", 
+                        day: "Сб", 
+                        workouts: [
+                            { exercise: "Длинный медленный", type: "Бег длинный", duration: "75 мин", rpe: 3 }
+                        ] 
+                    },
+                    { 
+                        date: "07.12.2025", 
+                        day: "Вс", 
+                        workouts: [
+                            { exercise: "Inverted Row", type: "Лёгкая верх/кор", sets: 3, reps: "10-12", weight: "BW", rpe: 4 },
+                            { exercise: "Push-Up", type: "Лёгкая верх/кор", sets: 3, reps: "10-15", weight: "BW", rpe: 4 },
+                            { exercise: "Face Pull", type: "Лёгкая верх/кор", sets: 3, reps: "12-15", weight: "Резина средняя", rpe: 4 },
+                            { exercise: "Pallof Press", type: "Лёгкая верх/кор", sets: 3, reps: "10 на сторону", weight: "Резина средняя", rpe: 4 },
+                            { exercise: "Dead Bug", type: "Лёгкая верх/кор", sets: 3, reps: "10 на сторону", weight: "BW", rpe: 3 },
+                            { exercise: "Plank", type: "Лёгкая верх/кор", sets: 2, reps: "45-60 сек", weight: "BW", rpe: 4 },
+                            { exercise: "Side Plank", type: "Лёгкая верх/кор", sets: 2, reps: "30-45 сек на сторону", weight: "BW", rpe: 4 }
+                        ] 
+                    }
+                ]
+            }
+        ];
+
+        let appState = {
+            currentRole: null,
+            currentWeek: 0,
+            currentDay: 6,
+            workoutData: {},
+            editingId: null,
+            syncing: false
+        };
+
+        function login(role) {
+            appState.currentRole = role;
+            document.getElementById('loginScreen').classList.add('app-hidden');
+            document.getElementById('mainApp').classList.remove('app-hidden');
+
+            if (role === 'athlete') {
+                document.getElementById('athleteView').classList.remove('app-hidden');
+                document.getElementById('supervisorView').classList.add('app-hidden');
+                document.getElementById('roleDisplay').textContent = '🏃 Спортсмен';
+                document.getElementById('roleDisplay').className = 'role-badge role-athlete';
+            } else {
+                document.getElementById('athleteView').classList.add('app-hidden');
+                document.getElementById('supervisorView').classList.remove('app-hidden');
+                document.getElementById('roleDisplay').textContent = '👨‍🏫 Супервайзер';
+                document.getElementById('roleDisplay').className = 'role-badge role-supervisor';
+            }
+
+            loadWorkoutData();
+            updateAthleteWorkouts();
+            updateSupervisorView();
+        }
+
+        function logout() {
+            appState.currentRole = null;
+            document.getElementById('loginScreen').classList.remove('app-hidden');
+            document.getElementById('mainApp').classList.add('app-hidden');
+        }
+
+        function loadWorkoutData() {
+            const stored = localStorage.getItem('workoutData');
+            appState.workoutData = stored ? JSON.parse(stored) : {};
+        }
+
+        function saveWorkoutData() {
+            localStorage.setItem('workoutData', JSON.stringify(appState.workoutData));
+        }
+
+        async function syncWithSheets() {
+            if (appState.syncing) return;
+
+            appState.syncing = true;
+            const btn = document.getElementById('syncBtn');
+            const icon = document.getElementById('syncIcon');
+            const text = document.getElementById('syncText');
+            const status = document.getElementById('syncStatus');
+
+            btn.classList.add('syncing');
+            icon.textContent = '⏳';
+            text.textContent = 'Синхронизация...';
+
+            try {
+                // Отправляем данные в Google Sheets
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        action: 'sync_data'
+                    }),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                });
+
+                // Отправляем workoutData
+                const formData = new FormData();
+                formData.append('action', 'sync_data');
+                formData.append('data', JSON.stringify(appState.workoutData));
+
+                await fetch(GAS_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                setTimeout(() => {
+                    btn.classList.remove('syncing');
+                    icon.textContent = '✅';
+                    text.textContent = 'Синхро';
+                    status.textContent = '✅ Синхронизировано';
+
+                    setTimeout(() => {
+                        status.textContent = '';
+                    }, 3000);
+
+                    appState.syncing = false;
+                }, 800);
+
+            } catch (error) {
+                console.error('Sync error:', error);
+                btn.classList.remove('syncing');
+                icon.textContent = '❌';
+                status.textContent = '❌ Ошибка синхронизации';
+
+                setTimeout(() => {
+                    icon.textContent = '🔄';
+                    status.textContent = '';
+                    appState.syncing = false;
+                }, 3000);
+            }
+        }
+
+        function updateAthleteWorkouts() {
+            const week = document.getElementById('selectWeek').value;
+            const day = document.getElementById('selectDay').value;
+            const container = document.getElementById('workoutsContainer');
+
+            appState.currentWeek = week;
+            appState.currentDay = day;
+
+            const dayData = TRAINING_DATA[week]?.days[day];
+            if (!dayData) {
+                container.innerHTML = '<p style="color: #888;">Нет данных</p>';
+                return;
+            }
+
+            let html = '';
+            dayData.workouts.forEach((workout, index) => {
+                const workoutId = `${week}-${day}-${index}`;
+                const record = appState.workoutData[workoutId] || {};
+                const isCompleted = record.completed || false;
+
+                html += `
+                    <div class="workout-card ${isCompleted ? 'completed' : ''}">
+                        <div class="workout-title">${workout.exercise}</div>
+                        <div class="workout-type">${workout.type}</div>
+                        <div class="workout-details">
+                            ${workout.duration ? `<div class="detail-row"><span class="detail-label">⏱️ Время:</span><span class="detail-value">${workout.duration}</span></div>` : ''}
+                            ${workout.sets ? `<div class="detail-row"><span class="detail-label">Подходы:</span><span class="detail-value">${workout.sets}</span></div>` : ''}
+                            ${workout.reps ? `<div class="detail-row"><span class="detail-label">Повторения:</span><span class="detail-value">${workout.reps}</span></div>` : ''}
+                            ${workout.weight ? `<div class="detail-row"><span class="detail-label">Вес:</span><span class="detail-value">${workout.weight}</span></div>` : ''}
+                            <div class="detail-row"><span class="detail-label">RPE:</span><span class="detail-value">${record.rpe || workout.rpe}</span></div>
+                            ${record.pulse ? `<div class="detail-row"><span class="detail-label">Пульс:</span><span class="detail-value">${record.pulse} уд/мин</span></div>` : ''}
+                            ${record.mood ? `<div class="detail-row"><span class="detail-label">Самочувствие:</span><span class="detail-value">${record.mood}</span></div>` : ''}
+                        </div>
+                        <div class="workout-actions">
+                            <button class="btn-small btn-complete" onclick="openLogModal('${workoutId}', '${workout.exercise}')">${isCompleted ? '✅ Отметить ещё раз' : '⬜ Отметить'}</button>
+                            <button class="btn-small btn-edit" onclick="openEditModal('${workoutId}', '${workout.exercise}', ${workout.sets || 0}, '${workout.reps || ''}', '${workout.weight || ''}', ${workout.rpe || 0})">✏️ Редактировать</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            updateDashboards();
+        }
+
+        function openLogModal(workoutId, exerciseName) {
+            appState.editingId = workoutId;
+            document.getElementById('logExerciseName').value = exerciseName;
+            document.getElementById('logPulse').value = '';
+            document.getElementById('logRPE').value = '';
+            document.getElementById('logMood').value = '';
+            document.getElementById('logNotes').value = '';
+            document.getElementById('logModal').classList.add('active');
+        }
+
+        function saveLogData() {
+            const id = appState.editingId;
+            if (!appState.workoutData[id]) appState.workoutData[id] = {};
+
+            appState.workoutData[id].completed = true;
+            appState.workoutData[id].pulse = document.getElementById('logPulse').value || '';
+            appState.workoutData[id].rpe = document.getElementById('logRPE').value || '';
+            appState.workoutData[id].mood = document.getElementById('logMood').value || '';
+            appState.workoutData[id].notes = document.getElementById('logNotes').value || '';
+
+            saveWorkoutData();
+            closeModal();
+            updateAthleteWorkouts();
+        }
+
+        function openEditModal(workoutId, exerciseName, sets, reps, weight, rpe) {
+            appState.editingId = workoutId;
+            document.getElementById('editExerciseName').value = exerciseName;
+            document.getElementById('editSets').value = sets;
+            document.getElementById('editReps').value = reps;
+            document.getElementById('editWeight').value = weight;
+            document.getElementById('editRPE').value = rpe;
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        function saveEditedWorkout() {
+            const id = appState.editingId;
+            if (!appState.workoutData[id]) appState.workoutData[id] = {};
+
+            appState.workoutData[id].sets = document.getElementById('editSets').value;
+            appState.workoutData[id].reps = document.getElementById('editReps').value;
+            appState.workoutData[id].weight = document.getElementById('editWeight').value;
+            appState.workoutData[id].rpe = document.getElementById('editRPE').value;
+
+            saveWorkoutData();
+            closeModal();
+            updateAthleteWorkouts();
+        }
+
+        function closeModal() {
+            document.getElementById('logModal').classList.remove('active');
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        function updateDashboards() {
+            const week = appState.currentWeek;
+            const day = appState.currentDay;
+            let total = 0, completed = 0, totalRPE = 0;
+
+            const dayData = TRAINING_DATA[week]?.days[day];
+            if (dayData) {
+                dayData.workouts.forEach((workout, index) => {
+                    const id = `${week}-${day}-${index}`;
+                    const record = appState.workoutData[id] || {};
+                    total++;
+                    if (record.completed) completed++;
+                    const rpe = parseInt(record.rpe || workout.rpe || 0);
+                    if (rpe > 0) totalRPE += rpe;
+                });
+            }
+
+            const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+            document.getElementById('completedCount').textContent = completed + '/' + total;
+            document.getElementById('completionPercent').textContent = percent + '%';
+            document.getElementById('avgRPE').textContent = total > 0 ? (totalRPE / total).toFixed(1) : '0.0';
+        }
+
+        function updateSupervisorView() {
+            const week = document.getElementById('selectWeekSupervisor').value;
+            const weekData = TRAINING_DATA[week];
+
+            if (!weekData) return;
+
+            let completedDays = 0;
+            let totalDays = weekData.days.length;
+            let totalWorkouts = 0;
+            let completedWorkouts = 0;
+            let totalRPE = 0;
+
+            weekData.days.forEach((dayData, dayIndex) => {
+                let dayCompleted = 0;
+                let dayTotal = dayData.workouts.length;
+
+                dayData.workouts.forEach((workout, wIndex) => {
+                    const id = `${week}-${dayIndex}-${wIndex}`;
+                    const record = appState.workoutData[id] || {};
+
+                    totalWorkouts++;
+                    if (record.completed) {
+                        completedWorkouts++;
+                        dayCompleted++;
+                    }
+
+                    const rpe = parseInt(record.rpe || workout.rpe || 0);
+                    if (rpe > 0) totalRPE += rpe;
+                });
+
+                if (dayCompleted === dayTotal && dayTotal > 0) {
+                    completedDays++;
+                }
+            });
+
+            const percent = totalDays > 0 ? Math.round((completedDays / totalDays) * 100) : 0;
+            document.getElementById('supervisorCompleted').textContent = completedDays + '/' + totalDays;
+            document.getElementById('supervisorPercent').textContent = percent + '%';
+            document.getElementById('supervisorAvgRPE').textContent = totalWorkouts > 0 ? (totalRPE / totalWorkouts).toFixed(1) : '0.0';
+        }
+    </script>
+</body>
+</html>
