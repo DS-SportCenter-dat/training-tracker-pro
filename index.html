@@ -88,9 +88,7 @@
             box-shadow: 0 10px 25px rgba(255, 107, 53, 0.4);
         }
 
-        .app-hidden {
-            display: none !important;
-        }
+        .app-hidden { display: none !important; }
 
         .header {
             background: #1a1f3a;
@@ -105,11 +103,7 @@
             gap: 15px;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
+        .header-left { display: flex; align-items: center; gap: 20px; }
 
         .role-badge {
             display: inline-block;
@@ -119,21 +113,10 @@
             font-weight: 600;
         }
 
-        .role-athlete {
-            background: #00d084;
-            color: #0a0e27;
-        }
+        .role-athlete { background: #00d084; color: #0a0e27; }
+        .role-supervisor { background: #ff6b35; color: #fff; }
 
-        .role-supervisor {
-            background: #ff6b35;
-            color: #fff;
-        }
-
-        .header-right {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
+        .header-right { display: flex; gap: 15px; align-items: center; }
 
         .btn-logout {
             padding: 10px 20px;
@@ -147,9 +130,7 @@
             transition: all 0.3s;
         }
 
-        .btn-logout:hover {
-            background: #ff8555;
-        }
+        .btn-logout:hover { background: #ff8555; }
 
         .controls {
             background: #1a1f3a;
@@ -238,14 +219,8 @@
             margin-bottom: 6px;
         }
 
-        .detail-label {
-            color: #888;
-        }
-
-        .detail-value {
-            color: #e0e0e0;
-            font-weight: 600;
-        }
+        .detail-label { color: #888; }
+        .detail-value { color: #e0e0e0; font-weight: 600; }
 
         .workout-actions {
             display: flex;
@@ -264,38 +239,14 @@
             font-weight: 600;
         }
 
-        .btn-complete {
-            background: #00d084;
-            color: #0a0e27;
-            flex: 1;
-            min-width: 100px;
-        }
+        .btn-complete { background: #00d084; color: #0a0e27; flex: 1; min-width: 100px; }
+        .btn-complete:hover { background: #00e699; }
 
-        .btn-complete:hover {
-            background: #00e699;
-        }
+        .btn-edit { background: #4a5f8f; color: white; flex: 1; min-width: 80px; }
+        .btn-edit:hover { background: #5a6fa0; }
 
-        .btn-edit {
-            background: #4a5f8f;
-            color: white;
-            flex: 1;
-            min-width: 80px;
-        }
-
-        .btn-edit:hover {
-            background: #5a6fa0;
-        }
-
-        .btn-cancel {
-            background: #ff6b35;
-            color: white;
-            flex: 1;
-            min-width: 80px;
-        }
-
-        .btn-cancel:hover {
-            background: #ff8555;
-        }
+        .btn-cancel { background: #ff6b35; color: white; flex: 1; min-width: 80px; }
+        .btn-cancel:hover { background: #ff8555; }
 
         .modal {
             display: none;
@@ -310,9 +261,7 @@
             justify-content: center;
         }
 
-        .modal.active {
-            display: flex;
-        }
+        .modal.active { display: flex; }
 
         .modal-content {
             background: #1a1f3a;
@@ -332,9 +281,7 @@
             font-weight: 700;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .form-group { margin-bottom: 20px; }
 
         .form-label {
             display: block;
@@ -361,10 +308,7 @@
             box-shadow: 0 0 10px rgba(0, 208, 132, 0.3);
         }
 
-        .form-textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
+        .form-textarea { resize: vertical; min-height: 80px; }
 
         .modal-buttons {
             display: flex;
@@ -384,9 +328,7 @@
             transition: all 0.3s;
         }
 
-        .btn-primary:hover {
-            background: #00e699;
-        }
+        .btn-primary:hover { background: #00e699; }
 
         .btn-secondary {
             flex: 1;
@@ -400,9 +342,7 @@
             transition: all 0.3s;
         }
 
-        .btn-secondary:hover {
-            background: #444;
-        }
+        .btn-secondary:hover { background: #444; }
 
         .dashboard-container {
             background: #1a1f3a;
@@ -447,12 +387,6 @@
             font-weight: 700;
         }
 
-        .dashboard-status {
-            font-size: 12px;
-            color: #b0b0b0;
-            margin-top: 8px;
-        }
-
         .supervisor-table {
             background: #1a1f3a;
             border: 1px solid #00d084;
@@ -461,14 +395,9 @@
             margin-top: 20px;
         }
 
-        .table-scroll {
-            overflow-x: auto;
-        }
+        .table-scroll { overflow-x: auto; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        table { width: 100%; border-collapse: collapse; }
 
         thead {
             background: #0a0e27;
@@ -492,34 +421,8 @@
             color: #b0b0b0;
         }
 
-        tr:hover {
-            background: rgba(0, 208, 132, 0.05);
-        }
-
-        tr.completed {
-            background: rgba(0, 208, 132, 0.1);
-        }
-
-        .editable-cell {
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-
-        .editable-cell:hover {
-            background: rgba(0, 208, 132, 0.2);
-        }
-
-        .editable-cell input {
-            background: #0a0e27;
-            color: #e0e0e0;
-            border: 1px solid #00d084;
-            padding: 6px;
-            border-radius: 4px;
-            font-size: 13px;
-            width: 100%;
-        }
+        tr:hover { background: rgba(0, 208, 132, 0.05); }
+        tr.completed { background: rgba(0, 208, 132, 0.1); }
 
         .btn-edit-mode {
             background: #00d084;
@@ -532,9 +435,7 @@
             margin-bottom: 15px;
         }
 
-        .btn-edit-mode:hover {
-            background: #00e699;
-        }
+        .btn-edit-mode:hover { background: #00e699; }
 
         .btn-save-mode {
             background: #4a5f8f;
@@ -547,28 +448,13 @@
             margin-bottom: 15px;
         }
 
-        .btn-save-mode:hover {
-            background: #5a6fa0;
-        }
+        .btn-save-mode:hover { background: #5a6fa0; }
 
         @media (max-width: 768px) {
-            .workouts-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-content {
-                padding: 20px;
-                width: 95%;
-            }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            th, td {
-                padding: 10px;
-                font-size: 11px;
-            }
+            .workouts-grid { grid-template-columns: 1fr; }
+            .modal-content { padding: 20px; width: 95%; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            th, td { padding: 10px; font-size: 11px; }
         }
     </style>
 </head>
@@ -586,15 +472,11 @@
                     👨‍🏫 Войти как супервайзер
                 </button>
             </div>
-            <p style="margin-top: 30px; font-size: 12px; color: #666;">
-                Demo Mode • Данные загружаются локально
-            </p>
         </div>
     </div>
 
     <!-- MAIN APP -->
     <div id="mainApp" class="app-hidden">
-        <!-- HEADER -->
         <div class="header">
             <div class="header-left">
                 <h1 style="font-size: 24px; color: #00d084;">🏃 TRAINING TRACKER</h1>
@@ -625,7 +507,6 @@
 
             <div id="workoutsContainer" class="workouts-grid"></div>
 
-            <!-- ATHLETE DASHBOARDS -->
             <div class="dashboard-container">
                 <div class="dashboard-title">📊 Дашборд дня</div>
                 <div class="dashboard-grid">
@@ -660,7 +541,6 @@
                 </div>
             </div>
 
-            <!-- SUPERVISOR DASHBOARDS -->
             <div class="dashboard-container">
                 <div class="dashboard-title">📊 Аналитика недели</div>
                 <div class="dashboard-grid">
@@ -750,7 +630,6 @@
     </div>
 
     <script>
-        // ПОЛНАЯ ПРОГРАММА НЕДЕЛЯ 1 (С ИСПРАВЛЕНИЯМИ)
         const TRAINING_DATA = [
             {
                 week: 1,
@@ -812,14 +691,19 @@
                         date: "07.12.2025", 
                         day: "Вс", 
                         workouts: [
-                            { exercise: "Inverted Row", type: "Лёгкая верх/кор", sets: 3, reps: "10-12", weight: "BW", rpe: 4 }
+                            { exercise: "Inverted Row", type: "Лёгкая верх/кор", sets: 3, reps: "10-12", weight: "BW", rpe: 4 },
+                            { exercise: "Push-Up", type: "Лёгкая верх/кор", sets: 3, reps: "10-15", weight: "BW", rpe: 4 },
+                            { exercise: "Face Pull", type: "Лёгкая верх/кор", sets: 3, reps: "12-15", weight: "Резина средняя", rpe: 4 },
+                            { exercise: "Pallof Press", type: "Лёгкая верх/кор", sets: 3, reps: "10 на сторону", weight: "Резина средняя", rpe: 4 },
+                            { exercise: "Dead Bug", type: "Лёгкая верх/кор", sets: 3, reps: "10 на сторону", weight: "BW", rpe: 3 },
+                            { exercise: "Plank", type: "Лёгкая верх/кор", sets: 2, reps: "45-60 сек", weight: "BW", rpe: 4 },
+                            { exercise: "Side Plank", type: "Лёгкая верх/кор", sets: 2, reps: "30-45 сек на сторону", weight: "BW", rpe: 4 }
                         ] 
                     }
                 ]
             }
         ];
 
-        // APP STATE
         let appState = {
             currentRole: null,
             currentWeek: 0,
@@ -893,10 +777,9 @@
                 const workoutId = `${week}-${day}-${index}`;
                 const record = appState.workoutData[workoutId] || {};
                 const isCompleted = record.completed || false;
-                const isCancelled = record.cancelled || false;
 
                 html += `
-                    <div class="workout-card ${isCompleted ? 'completed' : ''} ${isCancelled ? 'cancelled' : ''}">
+                    <div class="workout-card ${isCompleted ? 'completed' : ''}">
                         <div class="workout-title">${workout.exercise}</div>
                         <div class="workout-type">${workout.type}</div>
                         <div class="workout-details">
@@ -910,8 +793,8 @@
                             ${record.notes ? `<div class="detail-row"><span class="detail-label">Примечания:</span><span class="detail-value">${record.notes}</span></div>` : ''}
                         </div>
                         <div class="workout-actions">
-                            ${!isCancelled ? `<button class="btn-small btn-complete" onclick="openLogModal('${workoutId}', '${workout.exercise}')">${isCompleted ? '✅ Отметить ещё раз' : '⬜ Отметить'}</button>` : ''}
-                            ${!isCancelled ? `<button class="btn-small btn-edit" onclick="openEditModal('${workoutId}', '${workout.exercise}', ${workout.sets || 0}, '${workout.reps || ''}', '${workout.weight || ''}', ${workout.rpe || 0})">✏️ Редактировать</button>` : ''}
+                            <button class="btn-small btn-complete" onclick="openLogModal('${workoutId}', '${workout.exercise}')">${isCompleted ? '✅ Отметить ещё раз' : '⬜ Отметить'}</button>
+                            <button class="btn-small btn-edit" onclick="openEditModal('${workoutId}', '${workout.exercise}', ${workout.sets || 0}, '${workout.reps || ''}', '${workout.weight || ''}', ${workout.rpe || 0})">✏️ Редактировать</button>
                         </div>
                     </div>
                 `;
@@ -1064,8 +947,6 @@
             appState.workoutData[id][field] = value;
             saveWorkoutData();
         }
-
-        window.addEventListener('load', () => { console.log('Training Tracker Pro v2.0 loaded'); });
     </script>
 </body>
 </html>
