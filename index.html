@@ -18,7 +18,6 @@
             line-height: 1.6;
         }
 
-        /* ===== LOGIN SCREEN ===== */
         .login-screen {
             display: flex;
             align-items: center;
@@ -454,18 +453,6 @@
             margin-top: 8px;
         }
 
-        .status-ok {
-            color: #00d084;
-        }
-
-        .status-warning {
-            color: #ff9800;
-        }
-
-        .status-error {
-            color: #ff6b35;
-        }
-
         .supervisor-table {
             background: #1a1f3a;
             border: 1px solid #00d084;
@@ -513,11 +500,6 @@
             background: rgba(0, 208, 132, 0.1);
         }
 
-        tr.cancelled {
-            background: rgba(255, 107, 53, 0.1);
-            opacity: 0.8;
-        }
-
         .editable-cell {
             cursor: pointer;
             padding: 8px;
@@ -536,16 +518,37 @@
             padding: 6px;
             border-radius: 4px;
             font-size: 13px;
+            width: 100%;
         }
 
-        .sync-status {
-            display: inline-block;
-            padding: 4px 12px;
+        .btn-edit-mode {
             background: #00d084;
             color: #0a0e27;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 700;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .btn-edit-mode:hover {
+            background: #00e699;
+        }
+
+        .btn-save-mode {
+            background: #4a5f8f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .btn-save-mode:hover {
+            background: #5a6fa0;
         }
 
         @media (max-width: 768px) {
@@ -624,7 +627,7 @@
 
             <!-- ATHLETE DASHBOARDS -->
             <div class="dashboard-container">
-                <div class="dashboard-title">📊 Дашборд недели</div>
+                <div class="dashboard-title">📊 Дашборд дня</div>
                 <div class="dashboard-grid">
                     <div class="dashboard-card">
                         <div class="dashboard-label">Выполнено упр.</div>
@@ -633,15 +636,10 @@
                     <div class="dashboard-card">
                         <div class="dashboard-label">% выполнения</div>
                         <div class="dashboard-value" id="completionPercent">0%</div>
-                        <div class="dashboard-status" id="completionStatus"></div>
                     </div>
                     <div class="dashboard-card">
                         <div class="dashboard-label">Средний RPE</div>
                         <div class="dashboard-value" id="avgRPE">0.0</div>
-                    </div>
-                    <div class="dashboard-card">
-                        <div class="dashboard-label">S-коэффициент</div>
-                        <div class="dashboard-value" id="sCoeff">0.0</div>
                     </div>
                 </div>
             </div>
@@ -653,6 +651,7 @@
                 <select id="selectWeekSupervisor" class="select-week-supervisor" onchange="updateSupervisorView()">
                     <option value="0">Неделя 1 (01-07.12) • АДАПТАЦИЯ</option>
                 </select>
+                <button class="btn-edit-mode" id="editModeBtn" onclick="toggleEditMode()">✏️ Редактировать план</button>
             </div>
 
             <div class="supervisor-table">
@@ -663,7 +662,7 @@
 
             <!-- SUPERVISOR DASHBOARDS -->
             <div class="dashboard-container">
-                <div class="dashboard-title">📊 Аналитика по недели</div>
+                <div class="dashboard-title">📊 Аналитика недели</div>
                 <div class="dashboard-grid">
                     <div class="dashboard-card">
                         <div class="dashboard-label">Выполнено</div>
@@ -672,15 +671,10 @@
                     <div class="dashboard-card">
                         <div class="dashboard-label">% выполнения</div>
                         <div class="dashboard-value" id="supervisorPercent">0%</div>
-                        <div class="dashboard-status" id="supervisorStatus"></div>
                     </div>
                     <div class="dashboard-card">
                         <div class="dashboard-label">Средний RPE</div>
                         <div class="dashboard-value" id="supervisorAvgRPE">0.0</div>
-                    </div>
-                    <div class="dashboard-card">
-                        <div class="dashboard-label">S-коэффициент</div>
-                        <div class="dashboard-value" id="supervisorSCoeff">0.0</div>
                     </div>
                 </div>
             </div>
@@ -755,46 +749,72 @@
         </div>
     </div>
 
-    <!-- CANCEL MODAL -->
-    <div id="cancelModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-title">❌ Отменить упражнение</div>
-            <div class="form-group">
-                <label class="form-label">Причина отмены</label>
-                <select id="cancelReason" class="form-select">
-                    <option value="">-- Выбери причину --</option>
-                    <option value="Боль / травма">🔴 Боль / травма</option>
-                    <option value="Усталость / перетренированность">😴 Усталость / перетренированность</option>
-                    <option value="Личные дела">📞 Личные дела</option>
-                    <option value="Болезнь">🤒 Болезнь</option>
-                    <option value="Другое">🚫 Другое</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Комментарий (опционально)</label>
-                <textarea id="cancelComment" class="form-textarea"></textarea>
-            </div>
-            <div class="modal-buttons">
-                <button class="btn-primary" style="background: #ff6b35;" onclick="confirmCancel()">✓ Подтвердить</button>
-                <button class="btn-secondary" onclick="closeModal()">Отмена</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // TRAINING DATA (НЕДЕЛЯ 1)
+        // ПОЛНАЯ ПРОГРАММА НЕДЕЛЯ 1 (С ИСПРАВЛЕНИЯМИ)
         const TRAINING_DATA = [
             {
                 week: 1,
                 phase: "АДАПТАЦИЯ",
                 days: [
-                    { date: "01.12.2025", day: "Пн", workouts: [{ exercise: "Лёгкий восстановительный кросс", type: "Бег восстановительный", duration: "45 мин", rpe: 3 }] },
-                    { date: "02.12.2025", day: "Вт", workouts: [{ exercise: "СБУ комплекс", type: "ОФП/СБУ", duration: "15-20 мин", rpe: 4 }, { exercise: "Single-Leg RDL", type: "ОФП", sets: 3, reps: "8 на ногу", weight: "16 кг", rpe: 5 }, { exercise: "Bulgarian Split Squat", type: "ОФП", sets: 3, reps: "8 на ногу", weight: "BW", rpe: 5 }] },
-                    { date: "03.12.2025", day: "Ср", workouts: [{ exercise: "Средний темповый", type: "Бег темповый", duration: "60 мин", rpe: 4 }] },
-                    { date: "04.12.2025", day: "Чт", workouts: [{ exercise: "Romanian Deadlift", type: "Силовая Д1", sets: 3, reps: "8", weight: "80/90/100 кг", rpe: 7 }, { exercise: "Bench Press", type: "Силовая Д1", sets: 3, reps: "8", weight: "55/60/60 кг", rpe: 6 }] },
-                    { date: "05.12.2025", day: "Пт", workouts: [{ exercise: "Лёгкий восстановительный", type: "Бег восстановительный", duration: "35 мин", rpe: 3 }] },
-                    { date: "06.12.2025", day: "Сб", workouts: [{ exercise: "Длинный медленный", type: "Бег длинный", duration: "75 мин", rpe: 3 }] },
-                    { date: "07.12.2025", day: "Вс", workouts: [{ exercise: "Inverted Row", type: "Лёгкая верх/кор", sets: 3, reps: "10-12", weight: "BW", rpe: 4 }] }
+                    { 
+                        date: "01.12.2025", 
+                        day: "Пн", 
+                        workouts: [
+                            { exercise: "Лёгкий восстановительный кросс", type: "Бег восстановительный", duration: "45 мин", rpe: 3 }
+                        ] 
+                    },
+                    { 
+                        date: "02.12.2025", 
+                        day: "Вт", 
+                        workouts: [
+                            { exercise: "СБУ комплекс", type: "ОФП/СБУ", duration: "15-20 мин", rpe: 4 },
+                            { exercise: "Single-Leg RDL", type: "ОФП", sets: 2, reps: "8 на ногу", weight: "16 кг", rpe: 5 },
+                            { exercise: "Bulgarian Split Squat", type: "ОФП", sets: 2, reps: "8 на ногу", weight: "BW", rpe: 5 },
+                            { exercise: "Single-Leg Calf Raise", type: "ОФП", sets: 3, reps: "15 на ногу", weight: "BW", rpe: 4 },
+                            { exercise: "Pallof Press", type: "ОФП", sets: 3, reps: "10 на сторону", weight: "Резина средняя", rpe: 5 },
+                            { exercise: "Single-Leg Hop", type: "ОФП", sets: 3, reps: "6 на ногу", weight: "BW", rpe: 4 },
+                            { exercise: "Copenhagen Plank", type: "ОФП", sets: 2, reps: "30 сек на сторону", weight: "BW", rpe: 5 },
+                            { exercise: "Наклонный жим гантелей", type: "Жимовое", sets: 3, reps: "6", weight: "12.5 кг", rpe: 6 },
+                            { exercise: "Тяга в наклоне", type: "Тяговое", sets: 3, reps: "8", weight: "15 кг", rpe: 6 },
+                            { exercise: "Back Extension", type: "На низ", sets: 3, reps: "12", weight: "BW", rpe: 5 }
+                        ] 
+                    },
+                    { 
+                        date: "03.12.2025", 
+                        day: "Ср", 
+                        workouts: [
+                            { exercise: "Средний темповый", type: "Бег темповый", duration: "60 мин", rpe: 4 }
+                        ] 
+                    },
+                    { 
+                        date: "04.12.2025", 
+                        day: "Чт", 
+                        workouts: [
+                            { exercise: "Romanian Deadlift", type: "Силовая Д1", sets: 3, reps: "8", weight: "80/90/100 кг", rpe: 7 },
+                            { exercise: "Bench Press", type: "Силовая Д1", sets: 3, reps: "8", weight: "55/60/60 кг", rpe: 6 }
+                        ] 
+                    },
+                    { 
+                        date: "05.12.2025", 
+                        day: "Пт", 
+                        workouts: [
+                            { exercise: "Лёгкий восстановительный", type: "Бег восстановительный", duration: "35 мин", rpe: 3 }
+                        ] 
+                    },
+                    { 
+                        date: "06.12.2025", 
+                        day: "Сб", 
+                        workouts: [
+                            { exercise: "Длинный медленный", type: "Бег длинный", duration: "75 мин", rpe: 3 }
+                        ] 
+                    },
+                    { 
+                        date: "07.12.2025", 
+                        day: "Вс", 
+                        workouts: [
+                            { exercise: "Inverted Row", type: "Лёгкая верх/кор", sets: 3, reps: "10-12", weight: "BW", rpe: 4 }
+                        ] 
+                    }
                 ]
             }
         ];
@@ -805,10 +825,10 @@
             currentWeek: 0,
             currentDay: 6,
             workoutData: {},
-            editingId: null
+            editingId: null,
+            editMode: false
         };
 
-        // LOGIN
         function login(role) {
             appState.currentRole = role;
             document.getElementById('loginScreen').classList.add('app-hidden');
@@ -833,6 +853,7 @@
 
         function logout() {
             appState.currentRole = null;
+            appState.editMode = false;
             document.getElementById('loginScreen').classList.remove('app-hidden');
             document.getElementById('mainApp').classList.add('app-hidden');
         }
@@ -891,7 +912,6 @@
                         <div class="workout-actions">
                             ${!isCancelled ? `<button class="btn-small btn-complete" onclick="openLogModal('${workoutId}', '${workout.exercise}')">${isCompleted ? '✅ Отметить ещё раз' : '⬜ Отметить'}</button>` : ''}
                             ${!isCancelled ? `<button class="btn-small btn-edit" onclick="openEditModal('${workoutId}', '${workout.exercise}', ${workout.sets || 0}, '${workout.reps || ''}', '${workout.weight || ''}', ${workout.rpe || 0})">✏️ Редактировать</button>` : ''}
-                            ${!isCancelled ? `<button class="btn-small btn-cancel" onclick="openCancelModal('${workoutId}')">❌ Отменить</button>` : ''}
                         </div>
                     </div>
                 `;
@@ -920,7 +940,6 @@
             appState.workoutData[id].rpe = document.getElementById('logRPE').value || appState.workoutData[id].rpe;
             appState.workoutData[id].mood = document.getElementById('logMood').value || '';
             appState.workoutData[id].notes = document.getElementById('logNotes').value || '';
-            appState.workoutData[id].timestamp = new Date().toISOString();
 
             saveWorkoutData();
             closeModal();
@@ -951,36 +970,9 @@
             updateAthleteWorkouts();
         }
 
-        function openCancelModal(workoutId) {
-            appState.editingId = workoutId;
-            document.getElementById('cancelReason').value = '';
-            document.getElementById('cancelComment').value = '';
-            document.getElementById('cancelModal').classList.add('active');
-        }
-
-        function confirmCancel() {
-            const reason = document.getElementById('cancelReason').value;
-            if (!reason) {
-                alert('Выбери причину!');
-                return;
-            }
-
-            const id = appState.editingId;
-            if (!appState.workoutData[id]) appState.workoutData[id] = {};
-
-            appState.workoutData[id].cancelled = true;
-            appState.workoutData[id].cancelReason = reason;
-            appState.workoutData[id].cancelComment = document.getElementById('cancelComment').value;
-
-            saveWorkoutData();
-            closeModal();
-            updateAthleteWorkouts();
-        }
-
         function closeModal() {
             document.getElementById('logModal').classList.remove('active');
             document.getElementById('editModal').classList.remove('active');
-            document.getElementById('cancelModal').classList.remove('active');
         }
 
         function updateDashboards() {
@@ -1004,20 +996,28 @@
             document.getElementById('completedCount').textContent = completed + '/' + total;
             document.getElementById('completionPercent').textContent = percent + '%';
             document.getElementById('avgRPE').textContent = total > 0 ? (totalRPE / total).toFixed(1) : '0.0';
-            document.getElementById('sCoeff').textContent = (totalRPE / 10).toFixed(1);
+        }
+
+        function toggleEditMode() {
+            appState.editMode = !appState.editMode;
+            updateSupervisorView();
         }
 
         function updateSupervisorView() {
             const week = document.getElementById('selectWeekSupervisor').value;
             const weekData = TRAINING_DATA[week];
             const table = document.getElementById('supervisorTable');
+            const btn = document.getElementById('editModeBtn');
 
             if (!weekData) {
                 table.innerHTML = '<tr><td>Нет данных</td></tr>';
                 return;
             }
 
-            let html = '<thead><tr><th>День</th><th>Упр.</th><th>Подходы</th><th>Повторения</th><th>Вес</th><th>RPE</th><th>Выполнено</th><th>Пульс</th><th>Самочувствие</th><th>Примечания</th></tr></thead><tbody>';
+            btn.textContent = appState.editMode ? '💾 Сохранить' : '✏️ Редактировать план';
+            btn.className = appState.editMode ? 'btn-save-mode' : 'btn-edit-mode';
+
+            let html = '<thead><tr><th>День</th><th>Упр.</th><th>Подходы</th><th>Повторения</th><th>Вес</th><th>RPE</th><th>Выполнено</th><th>Пульс</th><th>Самочувствие</th></tr></thead><tbody>';
             let totalWorkouts = 0, completedWorkouts = 0, totalRPE = 0;
 
             weekData.days.forEach((dayData, dayIndex) => {
@@ -1031,17 +1031,21 @@
                     const rpe = parseInt(record.rpe || workout.rpe || 0);
                     if (rpe > 0) totalRPE += rpe;
 
+                    const sets = record.sets || workout.sets || '-';
+                    const reps = record.reps || workout.reps || '-';
+                    const weight = record.weight || workout.weight || '-';
+                    const workoutRPE = record.rpe || workout.rpe || '-';
+
                     html += `<tr class="${isCompleted ? 'completed' : ''}">
                         <td>${dayData.day}</td>
                         <td>${workout.exercise}</td>
-                        <td>${record.sets || workout.sets || '-'}</td>
-                        <td>${record.reps || workout.reps || '-'}</td>
-                        <td>${record.weight || workout.weight || '-'}</td>
-                        <td>${record.rpe || workout.rpe || '-'}</td>
+                        <td>${appState.editMode ? `<input type="number" value="${sets}" onchange="saveTableEdit('${id}', 'sets', this.value)">` : sets}</td>
+                        <td>${appState.editMode ? `<input type="text" value="${reps}" onchange="saveTableEdit('${id}', 'reps', this.value)">` : reps}</td>
+                        <td>${appState.editMode ? `<input type="text" value="${weight}" onchange="saveTableEdit('${id}', 'weight', this.value)">` : weight}</td>
+                        <td>${appState.editMode ? `<input type="number" value="${workoutRPE}" min="1" max="10" onchange="saveTableEdit('${id}', 'rpe', this.value)">` : workoutRPE}</td>
                         <td>${isCompleted ? '✅' : '☐'}</td>
                         <td>${record.pulse || '-'}</td>
                         <td>${record.mood || '-'}</td>
-                        <td>${record.notes || '-'}</td>
                     </tr>`;
                 });
             });
@@ -1049,23 +1053,19 @@
             html += '</tbody>';
             table.innerHTML = html;
 
-            // Update supervisor dashboard
             const percent = totalWorkouts > 0 ? Math.round((completedWorkouts / totalWorkouts) * 100) : 0;
             document.getElementById('supervisorCompleted').textContent = completedWorkouts + '/' + totalWorkouts;
             document.getElementById('supervisorPercent').textContent = percent + '%';
             document.getElementById('supervisorAvgRPE').textContent = totalWorkouts > 0 ? (totalRPE / totalWorkouts).toFixed(1) : '0.0';
-            document.getElementById('supervisorSCoeff').textContent = (totalRPE / 10).toFixed(1);
-
-            let statusClass = 'status-error', statusText = '❌ Отклонение';
-            if (percent >= 80) { statusClass = 'status-ok'; statusText = '✅ По плану'; }
-            else if (percent >= 60) { statusClass = 'status-warning'; statusText = '⚠️ Внимание'; }
-
-            document.getElementById('supervisorStatus').className = 'dashboard-status ' + statusClass;
-            document.getElementById('supervisorStatus').textContent = statusText;
         }
 
-        // Init
-        window.addEventListener('load', () => { console.log('Training Tracker Pro v1.1 loaded'); });
+        function saveTableEdit(id, field, value) {
+            if (!appState.workoutData[id]) appState.workoutData[id] = {};
+            appState.workoutData[id][field] = value;
+            saveWorkoutData();
+        }
+
+        window.addEventListener('load', () => { console.log('Training Tracker Pro v2.0 loaded'); });
     </script>
 </body>
 </html>
